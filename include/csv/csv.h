@@ -14,6 +14,7 @@ typedef struct Parser {
 } Parser;
 
 Parser *parser_init(void);
+int add_data_to_parser(Parser *p, char **fields, size_t field_count);
 int parse_from_file(Parser *p, const char *path, const char delimiter);
 int write_to_file(Parser *p, const char *path, const char delimiter);
 void parser_free(Parser *p);

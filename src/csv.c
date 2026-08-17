@@ -20,6 +20,40 @@ Parser *parser_init(void) {
   return p;
 }
 
+int add_data_to_parser(Parser *p, char **fields, size_t field_count) {
+  CsvRow *new_rows = realloc(p->rows, (p->count + 1) * sizeof(CsvRow));
+  if (new_rows == NULL) {
+    fprintf(stderr, "Unable to allocate space for new row.\n");
+    return -1;
+  }
+  p->rows = new_rows;
+
+  CsvRow *row = &p->rows[p->count];
+
+  row->fields = malloc(field_count * sizeof(char *));
+
+  if (row->fields == NULL) {
+    fprintf(stderr, "Unable to allocate space for new fields.\n");
+    return -1;
+  }
+
+  for (size_t i = 0;i < field_count; i++) {
+    row->fields[i] = strdup(fields[i]);
+
+    if (row->fields[i] == NULL) {
+      for (size_t j = 0; j < i; j++) {
+        free(row->fields[j]);
+      }
+      return -1;
+    }
+  }
+
+  row->count = field_count;
+  p->count++;
+
+  return 0;
+}
+
 static bool parse_line(const char *line, const char delimiter,
                        CsvRow *out_row) {
   size_t capacity = 4;
